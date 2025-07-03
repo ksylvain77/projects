@@ -1,0 +1,122 @@
+# Home Lab Project Development Rules
+
+## Project Structure & Naming
+- **Naming**: Use lowercase with hyphens (e.g., `finance-tracker`, `money-flow`)
+- **Main file**: Use unique names, NEVER `app.py` (e.g., `finance.py`, `dashboard.py`)
+- **Standard structure**:
+  ```
+  project-name/
+  ├── project-name.py          # Main application (unique name)
+  ├── requirements.txt         # Dependencies
+  ├── README.md               # Comprehensive documentation for AI
+  ├── venv/                   # Virtual environment
+  ├── static/                 # CSS, JS, images
+  ├── templates/              # HTML templates
+  └── data/                   # Data files
+  ```
+
+## Python Environment
+- **Python**: 3.12.3 (aliased via `~/bin/py3`)
+- **Virtual Environment**: Always use `venv` in each project
+- **Setup**: `python -m venv venv && source venv/bin/activate`
+
+## Code Style & Quality
+- **Formatter**: Black (default settings)
+- **Linting**: Minimal - just enough to catch basic issues
+- **Documentation**: Light on docstrings and inline comments - only when REALLY needed
+- **README**: Comprehensive and kept up-to-date with information AI chat would need
+- **Architecture**: Modular structure, not monolithic files
+
+## Web Development Stack
+- **Frameworks**: Flask and FastAPI
+- **Database**: SQLite with SQLAlchemy
+- **Other libraries**: As needed per project
+- **Security**: Home lab only - avoid auth and complex security
+
+## Service Management
+- **ALL web projects**: Must use systemd services
+- **Service template**:
+  ```ini
+  [Unit]
+  Description=Project Name Flask Application
+  After=network.target
+
+  [Service]
+  Type=simple
+  User=kevin
+  WorkingDirectory=/home/kevin/projects/project-name
+  ExecStart=/home/kevin/projects/project-name/venv/bin/python project-name.py
+  Restart=always
+  RestartSec=10
+  Environment=FLASK_ENV=production
+
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- **Dashboard integration**: ALL projects must be added to project-dashboard/app.py
+
+## Git Workflow
+- **Repository**: Use NAS git server at `/mnt/nas/git/`
+- **Commits**: Simple, straightforward messages
+- **Branches**: Use for big changes, small stuff goes to main/master
+- **Setup**: Initialize as git repo on NAS
+
+## Port Management
+- **Reserved**: 5000 (dashboard), 5001 (money-flow), 8000 (honeypot), 8080 (finance-tracker)
+- **Available**: 5002-5009, 8010-8019, 8090-8099
+
+## Development Principles
+- **Home lab focus**: Simple, functional, maintainable
+- **Balance**: Simple enough for home use, but robust and not fragile
+- **Modularity**: Break functionality into logical modules
+- **Documentation**: Focus on README for AI assistance
+- **Integration**: Always integrate with dashboard system
+
+## File Organization
+- **Static files**: `static/` folder
+- **Templates**: `templates/` folder  
+- **Data**: `data/` folder
+- **Configuration**: Keep config simple, avoid complex auth
+
+## When Creating New Projects
+1. Create project folder with hyphenated name
+2. Set up virtual environment
+3. Create main file with unique name (not app.py)
+4. Add requirements.txt
+5. Create comprehensive README.md
+6. Set up systemd service
+7. Add to project dashboard
+8. Initialize git on NAS
+9. Test service and dashboard integration
+
+## Code Examples
+```python
+# Main file structure
+from flask import Flask, render_template
+import sqlite3
+from sqlalchemy import create_engine
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5002)
+```
+
+```python
+# Dashboard integration
+"new-project": {
+    "name": "New Project",
+    "description": "Description",
+    "port": 5002,
+    "service": "new-project.service",
+    "type": "systemd",
+    "url": "http://localhost:5002",
+    "path": "/home/kevin/projects/new-project"
+}
+```
+
+Remember: Keep it simple, functional, and well-integrated with the dashboard system. 
